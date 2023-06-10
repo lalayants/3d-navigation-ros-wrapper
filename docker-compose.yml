@@ -1,0 +1,28 @@
+version: '3.9'
+name: '3d_navigation'
+
+services:
+  scene:
+    image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
+    container_name: 3d_navigation
+    command: ["/bin/bash", "-ci", "catkin build && source devel/setup.bash && bash"]
+    environment:
+      - DISPLAY
+      - XAUTORITY
+      - QT_X11_NO_MITSHM=1
+    ipc: host
+    stdin_open: true
+    tty: true
+    networks:
+      - general
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /etc/localtime:/etc/localtime:ro
+      - /dev:/dev
+  
+networks:
+  general:
+    attachable: true
+    internal: false
+    driver: bridge
+
