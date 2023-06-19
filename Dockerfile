@@ -13,6 +13,7 @@ RUN apt-get update && \
         libboost-system-dev \
         libboost-test-dev \
         libeigen3-dev \
+        libpcl-dev \
         libexpat1 \
         libflann-dev \
         libtriangle-dev \
@@ -30,27 +31,26 @@ RUN apt-get update && \
 
 RUN pip3 install pygccxml pyplusplus scipy
 
-# Octomap installation
 RUN mkdir /utils -p
 WORKDIR /utils
-RUN cd /utils && git clone https://github.com/OctoMap/octomap.git --branch master &&\
+
+# Octomap installation
+RUN cd /utils && git clone https://github.com/OctoMap/octomap.git --branch v1.8.1 &&\
     cd octomap && mkdir build && cd build && cmake .. && make install
 
 # FCL installation
-RUN cd /utils && git clone https://github.com/flexible-collision-library/fcl.git --branch 0.7.0 &&\
-    cd fcl && mkdir build && cd build && cmake .. && make install
+RUN cd /utils && git clone https://github.com/danfis/libccd.git && \
+        cd libccd && mkdir build && cd build && cmake -G Ninja .. && ninja && ninja install &&\
+    cd /utils && git clone https://github.com/flexible-collision-library/fcl.git --branch 0.7.0 &&\
+        cd fcl && mkdir build && cd build && cmake .. && make install
 
 # OMPL installation
-RUN cd / && git clone https://github.com/ompl/ompl.git --branch 1.6.0
-WORKDIR /build
-RUN cmake \
-        -DPYTHON_EXEC=/usr/bin/python3 \
-        -DOMPL_REGISTRATION=OFF \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -G Ninja \
-        /ompl && \
-    ninja update_bindings -j `nproc` && \
-    ninja -j `nproc` && \
-    ninja install
+RUN cd /utils && git clone https://github.com/ompl/omplapp.git --branch 1.6.0 --recursive &&\
+    cd omplapp && mkdir -p build/Release && cd build/Release && cmake ../.. && \
+    make update_bindings && make && make install
+
 WORKDIR /workspace/ros_ws
+
+COPY . /workspace/ros_ws/src/3d_navigation
+# RUN cd src/3d_navigation && mkdir -p build && cd build && cmake .. && make 
 
