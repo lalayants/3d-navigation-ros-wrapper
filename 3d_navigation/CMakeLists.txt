@@ -5,6 +5,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 project(3d_navigation)
+set(LIB_NAME global_planner_3d)
+
+# ROS
+find_package(catkin REQUIRED COMPONENTS)
 
 # Finding planning mapping and math packages
 find_package(PCL REQUIRED COMPONENTS common io)
@@ -13,17 +17,28 @@ find_package(fcl REQUIRED)
 find_package(octomap REQUIRED)
 find_package(Eigen3 REQUIRED)
 
+if(catkin_FOUND)
+
+  catkin_package(
+    INCLUDE_DIRS include/${CMAKE_PROJECT_NAME}
+    LIBRARIES ${LIB_NAME}
+    CATKIN_DEPENDS
+    DEPENDS PCL ompl fcl octomap Eigen3
+  )
+
+endif(catkin_FOUND)
+
 include_directories(${PCL_INCLUDE_DIRS} ${OMPL_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 include_directories(include/${CMAKE_PROJECT_NAME})
 
-add_library(global_planner_3d SHARED src/global_planner.cpp)
-target_link_libraries(global_planner_3d fcl ${OCTOMAP_LIBRARIES} ${OMPL_LIBRARIES})
+add_library(${LIB_NAME} SHARED src/global_planner.cpp)
+target_link_libraries(${LIB_NAME} fcl ${OCTOMAP_LIBRARIES} ${OMPL_LIBRARIES})
 
 ## Main script for example and tests
 add_executable(main src/main.cpp)
-target_link_libraries(main global_planner_3d)
+target_link_libraries(main ${LIB_NAME})
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/maps
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
