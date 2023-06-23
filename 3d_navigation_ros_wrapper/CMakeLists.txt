@@ -7,9 +7,6 @@ endif()
 project(3d_navigation_ros_wrapper)
 
 find_package(catkin REQUIRED COMPONENTS 3d_navigation)
-# catkin_package(
-# 	CATKIN_DEPENDS 3d_navigation roscpp pr2_msgs tf control_msgs diagnostic_msgs geometry_msgs nav_msgs std_msgs std_srvs trajectory_msgs
-# )
 
 # Finding planning mapping and math packages
 find_package(PCL REQUIRED COMPONENTS common io)
