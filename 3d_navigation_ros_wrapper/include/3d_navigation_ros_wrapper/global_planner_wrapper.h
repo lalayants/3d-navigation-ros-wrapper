@@ -6,6 +6,7 @@
 
 #include "geometry_msgs/Twist.h"
 #include "tf/transform_broadcaster.h"
+#include <tf/transform_listener.h>
 #include "nav_msgs/Odometry.h"
 #include "nav_msgs/Path.h"
 #include "std_srvs/Empty.h"
@@ -17,7 +18,7 @@
 class GlobalPlanner3dNodeWrapper {
 public:
 	GlobalPlanner3dNodeWrapper(
-        ros::NodeHandle & node_handler;
+        ros::NodeHandle & node_handler
     );
 	~GlobalPlanner3dNodeWrapper();
     bool initialize();
@@ -44,9 +45,9 @@ private:
     /// The received tf frame for start pose
     geometry_msgs::Transform start_in_map_transform;
 
-    GlobalPlanner3dPtr global_planner;
+    GlobalPlanner3d global_planner;
     void read_param(std::string param, std::string & to);
     bool set_start();
-	bool set_goal_callback(geometry_msgs::Point::ConstPtr & msg);
-    bool plan(nav_msgs::Path & path_msg)
+	static bool set_goal_callback(geometry_msgs::Point::ConstPtr & msg);
+    bool plan(nav_msgs::Path & path_msg);
 };
