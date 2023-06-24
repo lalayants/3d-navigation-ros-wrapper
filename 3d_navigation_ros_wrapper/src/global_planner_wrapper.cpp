@@ -3,7 +3,7 @@
 GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper read_param(std::string param, std::string & to){
     if (!node_handler.getParam(param, to)){
         ROS_ERROR("ROS param '%s' is missing!", param.c_str());
-        exit();
+        exit(1);
     }
     ROS_INFO("Got param map_frame: %s", to.c_str());
 }
@@ -37,7 +37,7 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, set_goal_callback);
     if (!sub_goal){
         ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
-        exit();
+        exit(1);
     }
 
     //Path publisher

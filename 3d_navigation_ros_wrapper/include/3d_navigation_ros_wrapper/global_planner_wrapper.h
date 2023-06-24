@@ -2,7 +2,7 @@
 
 #include <octomap/octomap.h>
 #include <iostream>
-#include <ros.h>
+#include <ros/ros.h>
 
 #include "geometry_msgs/Twist.h"
 #include "tf/transform_broadcaster.h"
