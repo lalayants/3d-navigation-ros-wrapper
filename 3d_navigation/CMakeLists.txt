@@ -18,12 +18,10 @@ find_package(octomap REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 if(catkin_FOUND)
-
   catkin_package(
-    INCLUDE_DIRS include/${CMAKE_PROJECT_NAME}
+    INCLUDE_DIRS include/${CMAKE_PROJECT_NAME} ${PCL_INCLUDE_DIRS} ${OMPL_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS}
     LIBRARIES ${LIB_NAME}
     CATKIN_DEPENDS
-    DEPENDS PCL ompl fcl octomap Eigen3
   )
 
 endif(catkin_FOUND)
