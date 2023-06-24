@@ -7,19 +7,15 @@ endif()
 project(3d_navigation_ros_wrapper)
 
 find_package(catkin REQUIRED COMPONENTS 3d_navigation)
+find_package(fcl)
 
-# Finding planning mapping and math packages
-find_package(PCL REQUIRED COMPONENTS common io)
-find_package(ompl REQUIRED)
-find_package(fcl REQUIRED)
-find_package(octomap REQUIRED)
-find_package(Eigen3 REQUIRED)
+catkin_package(
+  CATKIN_DEPENDS 3d_navigation
+)
 
-include_directories(${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} ${OMPL_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
-include_directories(include/${CMAKE_PROJECT_NAME})
+include_directories(${catkin_INCLUDE_DIRS} ${3d_navigation_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
+MESSAGE(${3d_navigation_INCLUDE_DIRS})
 
 ## Main script for example and tests
 add_executable(main src/main.cpp)
-target_link_libraries(main ${catkin_LIBRARIES} fcl ${OCTOMAP_LIBRARIES} ${OMPL_LIBRARIES})
+target_link_libraries(main ${catkin_LIBRARIES} ${3d_navigation_LIBRARIES} fcl)
