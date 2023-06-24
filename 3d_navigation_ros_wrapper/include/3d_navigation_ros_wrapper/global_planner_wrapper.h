@@ -7,7 +7,10 @@
 #include "geometry_msgs/Twist.h"
 #include "tf/transform_broadcaster.h"
 #include "nav_msgs/Odometry.h"
+#include "nav_msgs/Path.h"
 #include "std_srvs/Empty.h"
+
+#include <geometry_msgs/Point.h>
 
 #include "global_planner.h"
 
@@ -26,13 +29,24 @@ private:
 
     std::string global_path_pub_topic_name;
     std::string goal_pose_sub_topic_name;
+
+    std::string model_cube_size;
+    std::string bound_min;
+    std::string bound_max;
+
+    std::string map_path;
+    int path_msg_counter = 0;
+
     /// The ROS node handle
     ros::NodeHandle node_handler;
+    ros::Publisher pub_path;
 
     /// The received tf frame for start pose
     geometry_msgs::Transform start_in_map_transform;
 
     GlobalPlanner3dPtr global_planner;
-	bool set_goal_callback(Eigen::VectorXd & goal);
-    bool plan();
+    void read_param(std::string param, std::string & to);
+    bool set_start();
+	bool set_goal_callback(geometry_msgs::Point::ConstPtr & msg);
+    bool plan(nav_msgs::Path & path_msg)
 };
