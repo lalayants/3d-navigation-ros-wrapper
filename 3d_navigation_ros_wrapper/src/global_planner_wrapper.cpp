@@ -24,16 +24,17 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     // Creat planner
     double bmin = ::atof(bound_min.c_str());
     double bmax = ::atof(bound_max.c_str());
-    Eigen::Vector3d bound_mi;
+    Eigen::VectorXd bound_mi(3);
     bound_mi << bmin, bmin, bmin;
-    Eigen::Vector3d bound_ma;
+    Eigen::VectorXd bound_ma(3);
     bound_ma << bmax, bmax, bmax;
 
     double size = ::atof(model_cube_size.c_str());
     CollisionGeometryPtr drone_shape(new fcl::Box<double>(size, size, size));
-    // global_planner = GlobalPlanner3d(drone_shape, &bound_mi, &bound_ma);
-    // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
-    // global_planner = planner;
+
+    // Planner creation
+    GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
+    global_planner = planner;
     
 
     // TODO: read from octomap server
@@ -42,11 +43,12 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
 
     //Goal subscriber
-    ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, set_goal_callback);
-    if (!sub_goal){
-        ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
-        exit(1);
-    }
+    // TODO: fix non static...
+    // ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, set_goal_callback);
+    // if (!sub_goal){
+    //     ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
+    //     exit(1);
+    // }
 
     //Path publisher
     ros::Publisher pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
