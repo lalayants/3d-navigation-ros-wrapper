@@ -28,13 +28,13 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     bound_mi << bmin, bmin, bmin;
     Eigen::VectorXd bound_ma(3);
     bound_ma << bmax, bmax, bmax;
-
     double size = ::atof(model_cube_size.c_str());
     CollisionGeometryPtr drone_shape(new fcl::Box<double>(size, size, size));
 
     // Planner creation
-    GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
-    global_planner = planner;
+    // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
+    // global_planner = planner;
+    global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
     
 
     // TODO: read from octomap server
@@ -53,6 +53,9 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     //Path publisher
     ros::Publisher pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
     
+}
+// Destructor
+GlobalPlanner3dNodeWrapper::~GlobalPlanner3dNodeWrapper(){
 }
 
 bool GlobalPlanner3dNodeWrapper::set_start()
