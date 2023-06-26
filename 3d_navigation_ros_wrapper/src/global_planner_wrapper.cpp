@@ -32,8 +32,8 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     bound_ma << bmax, bmax, bmax;
 
     double size = ::atof(model_cube_size.c_str());
-    CollisionGeometryPtr drone_shape = CollisionGeometryPtr(new fcl::Box<double>(size, size, size));
-    global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
+    CollisionGeometryPtr drone_shape(new fcl::Box<double>(size, size, size));
+    // global_planner = GlobalPlanner3d(drone_shape, &bound_mi, &bound_ma);
     // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
     // global_planner = planner;
     
@@ -69,7 +69,7 @@ bool GlobalPlanner3dNodeWrapper::set_start()
     }
     Eigen::Vector3d robot_start;
     robot_start << tf_map_robot.getOrigin().x(), tf_map_robot.getOrigin().y(), tf_map_robot.getOrigin().z();
-    global_planner.set_start(robot_start);
+    global_planner.set_start(&robot_start);
     return true;
 }
 
@@ -77,11 +77,11 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 {
     if (!set_start()) 
         return false;
-    bool ok = planner.plan();
+    bool ok = global_planner.plan();
     if(!ok){
         return false;
     }
-    std::vector<Eigen::VectorXd> out_path = planner.get_smooth_path();
+    std::vector<Eigen::VectorXd> out_path = global_planner.get_smooth_path();
 
     // convert to ROS Path
 	std::vector<geometry_msgs::PoseStamped> poses(out_path.size());

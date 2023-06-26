@@ -48,6 +48,6 @@ private:
     GlobalPlanner3d global_planner;
     void read_param(std::string param, std::string & to);
     bool set_start();
-	static bool set_goal_callback(geometry_msgs::Point::ConstPtr & msg);
+	bool set_goal_callback(geometry_msgs::Point::ConstPtr & msg);
     bool plan(nav_msgs::Path & path_msg);
 };
