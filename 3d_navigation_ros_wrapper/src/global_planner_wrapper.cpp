@@ -1,5 +1,4 @@
 #include "global_planner_wrapper.h"
-#include "global_planner.h"
 
 
 void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to){
@@ -10,8 +9,7 @@ void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to)
     ROS_INFO("Got param map_frame: %s", to.c_str());
 }
 
-GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
-{
+GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler){
     node_handler = _node_handler;
     // Read all params
     read_param("map_frame", map_frame);
@@ -67,9 +65,9 @@ bool GlobalPlanner3dNodeWrapper::set_start()
         ROS_ERROR("No start point TF.");
         return false;
     }
-    Eigen::Vector3d robot_start;
+    Eigen::VectorXd robot_start(3);
     robot_start << tf_map_robot.getOrigin().x(), tf_map_robot.getOrigin().y(), tf_map_robot.getOrigin().z();
-    global_planner.set_start(&robot_start);
+    global_planner.set_start(robot_start);
     return true;
 }
 
@@ -99,7 +97,7 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 }
 
 bool GlobalPlanner3dNodeWrapper::set_goal_callback(geometry_msgs::Point::ConstPtr & msg){
-    Eigen::Vector3d robot_goal;
+    Eigen::VectorXd robot_goal(3);
     robot_goal << msg->x, msg->y, msg->z;
     global_planner.set_goal(robot_goal);
     nav_msgs::Path path_msg;
