@@ -9,7 +9,7 @@ int main(int _argc, char **_argv){
     GlobalPlanner3dNodeWrapper wrapper(node_handler);
     while(ros::ok){
         // std::cout << "1\n" << std::endl;
-        ROS_INFO("Spinning\n");
+        // ROS_INFO("Spinning\n");
         ros::spinOnce();
         rate.sleep();
     }

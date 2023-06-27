@@ -46,7 +46,7 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
 
     //Goal subscriber
-    ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
+    sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
     if (!sub_goal){
         ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
         exit(1);
@@ -75,6 +75,7 @@ bool GlobalPlanner3dNodeWrapper::set_start()
     }
     Eigen::VectorXd robot_start(3);
     robot_start << tf_map_robot.getOrigin().x(), tf_map_robot.getOrigin().y(), tf_map_robot.getOrigin().z();
+    ROS_INFO_STREAM("Robot state: " << tf_map_robot.getOrigin().x() << " " << tf_map_robot.getOrigin().y() << " " << tf_map_robot.getOrigin().z());
     global_planner_ptr->set_start(robot_start);
     return true;
 }
@@ -85,6 +86,7 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
         return false;
     bool ok = global_planner_ptr->plan();
     if(!ok){
+        ROS_ERROR("There is no plan!!");
         return false;
     }
     std::vector<Eigen::VectorXd> out_path = global_planner_ptr->get_smooth_path();
@@ -110,8 +112,11 @@ void GlobalPlanner3dNodeWrapper::set_goal_callback(const geometry_msgs::Point::C
     global_planner_ptr->set_goal(robot_goal);
     nav_msgs::Path path_msg;
     if(!plan(path_msg)){
+        ROS_ERROR("set_goal_callback do not construct the plan");
         return;
     }
     pub_path.publish(path_msg);
-    // return true;
+    // ROS_INFO("msg");
+    // ROS_ERROR("MSG");
+    // std::cout << "MSG" << std::endl;
 }

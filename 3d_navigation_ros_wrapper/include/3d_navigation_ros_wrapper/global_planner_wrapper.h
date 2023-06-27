@@ -39,6 +39,7 @@ private:
     /// The ROS node handle
     ros::NodeHandle node_handler;
     ros::Publisher pub_path;
+    ros::Subscriber sub_goal;
 
     /// The received tf frame for start pose
     geometry_msgs::Transform start_in_map_transform;
