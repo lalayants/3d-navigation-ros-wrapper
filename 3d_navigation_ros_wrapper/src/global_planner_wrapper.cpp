@@ -1,8 +1,9 @@
 #include "global_planner_wrapper.h"
 
 
-void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to){
-    if (!node_handler.getParam(param, to)){
+void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to) {
+    if (!ros::param::get(param, to)) {
+    // if (!node_handler.getParam(param, to)){
         ROS_ERROR("ROS param %s is missing!", param.c_str());
         exit(1);
     }
@@ -11,6 +12,7 @@ void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to)
 
 GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
 {
+    ros::Duration(1).sleep();
     ROS_INFO("GlobalPlanner3dNodeWrapper creation started");
     node_handler = _node_handler;
     // Read all params
@@ -34,10 +36,6 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     CollisionGeometryPtr drone_shape(new fcl::Box<double>(size, size, size));
 
     // Planner creation
-    // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
-    // global_planner = planner;
-    // global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
-
     global_planner_ptr = std::make_shared<GlobalPlanner3d>(drone_shape, bound_mi, bound_ma);
     
 
@@ -47,11 +45,6 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
 
     //Goal subscriber
-    // TODO: fix non static...
-    // static auto callback_static = [this](geometry_msgs::Point::ConstPtr & msg) {
-    //     // because we have a this pointer we are now able to call a non-static member method:
-    //     return set_goal_callback(msg);
-    // };
     ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
     if (!sub_goal){
         ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
