@@ -5,6 +5,6 @@
   <arg name="torque_safe_limit" default="0"/>
   <arg name="power_limit" default="4"/>
 
-  <node pkg="3d_navigation" type="global_planner_node" name="global_planner"> </node>
+  <node pkg="3d_navigation" type="main" name="global_planner"> </node>
 
 </launch> 

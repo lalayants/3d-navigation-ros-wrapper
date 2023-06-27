@@ -21,5 +21,5 @@ add_library(global_planner_3d_ros_wrapper SHARED src/global_planner_wrapper.cpp)
 target_link_libraries(global_planner_3d_ros_wrapper ${3d_navigation_LIBRARIES} ${OCTOMAP_LIBRARIES} ${catkin_LIBRARIES} fcl ${OMPL_LIBRARIES})
 
 ## Main script for example and tests
-# add_executable(main src/main.cpp)
-# target_link_libraries(main ${catkin_LIBRARIES} ${3d_navigation_LIBRARIES} fcl)
+add_executable(main src/global_planner_node.cpp)
+target_link_libraries(main ${catkin_LIBRARIES} ${3d_navigation_LIBRARIES} fcl)
