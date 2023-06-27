@@ -44,11 +44,15 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
     //Goal subscriber
     // TODO: fix non static...
-    // ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, set_goal_callback);
-    // if (!sub_goal){
-    //     ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
-    //     exit(1);
-    // }
+    // static auto callback_static = [this](geometry_msgs::Point::ConstPtr & msg) {
+    //     // because we have a this pointer we are now able to call a non-static member method:
+    //     return set_goal_callback(msg);
+    // };
+    ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
+    if (!sub_goal){
+        ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
+        exit(1);
+    }
 
     //Path publisher
     ros::Publisher pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
@@ -101,14 +105,14 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 	return true;
 }
 
-bool GlobalPlanner3dNodeWrapper::set_goal_callback(geometry_msgs::Point::ConstPtr & msg){
+void GlobalPlanner3dNodeWrapper::set_goal_callback(const geometry_msgs::Point::ConstPtr & msg){
     Eigen::VectorXd robot_goal(3);
     robot_goal << msg->x, msg->y, msg->z;
     global_planner.set_goal(robot_goal);
     nav_msgs::Path path_msg;
     if(!plan(path_msg)){
-        return false;
+        return;
     }
     pub_path.publish(path_msg);
-    return true;
+    // return true;
 }
