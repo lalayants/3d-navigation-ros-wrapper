@@ -6,7 +6,7 @@ int main(int _argc, char **_argv){
     ros::NodeHandle node_handler;
     ros::Rate rate(10);
     ROS_INFO("Creating\n");
-    GlobalPlanner3dNodeWrapper wrapper(ros::NodeHandle & _node_handler);
+    GlobalPlanner3dNodeWrapper wrapper(node_handler);
     while(ros::ok){
         // std::cout << "1\n" << std::endl;
         ROS_INFO("Spinning\n");
