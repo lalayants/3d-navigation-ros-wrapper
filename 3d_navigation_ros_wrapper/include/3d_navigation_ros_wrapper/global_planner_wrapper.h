@@ -17,9 +17,7 @@
 
 class GlobalPlanner3dNodeWrapper {
 public:
-	GlobalPlanner3dNodeWrapper(
-        ros::NodeHandle & node_handler
-    );
+    GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler);
 	~GlobalPlanner3dNodeWrapper();
     bool initialize();
 
@@ -45,7 +43,7 @@ private:
     /// The received tf frame for start pose
     geometry_msgs::Transform start_in_map_transform;
 
-    GlobalPlanner3d global_planner;
+    GlobalPlanner3dPtr global_planner_ptr;
     void read_param(std::string param, std::string & to);
     bool set_start();
 	void set_goal_callback(const geometry_msgs::Point::ConstPtr & msg);

@@ -16,10 +16,15 @@
 #include "logging.h"
 #include "global_planner.h"
 
+
+// GlobalPlanner3d::GlobalPlanner3d()
+// {}
+
 // Constructor
 GlobalPlanner3d::GlobalPlanner3d(
 	CollisionGeometryPtr robot_shape_ptr,
-	Eigen::VectorXd & _bound_min, Eigen::VectorXd & _bound_max
+	Eigen::VectorXd & _bound_min,
+	Eigen::VectorXd & _bound_max
 ):  dimension_ambient_space(_bound_min.rows()), bound_min(_bound_min), bound_max(_bound_max){
 
 	robot_object = std::make_shared<fcl::CollisionObject<double>>(robot_shape_ptr);
@@ -56,8 +61,8 @@ GlobalPlanner3d::GlobalPlanner3d(
 }
 
 // Destructor
-GlobalPlanner3d::~GlobalPlanner3d(){
-}
+GlobalPlanner3d::~GlobalPlanner3d()
+{}
 
 bool GlobalPlanner3d::set_start(Eigen::VectorXd & start_in){
 	ob::ScopedState<ob::RealVectorStateSpace> start_state(space_ptr);

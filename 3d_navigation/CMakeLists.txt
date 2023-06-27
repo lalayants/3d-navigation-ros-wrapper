@@ -40,5 +40,4 @@ target_link_libraries(main ${LIB_NAME})
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/maps
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    
 

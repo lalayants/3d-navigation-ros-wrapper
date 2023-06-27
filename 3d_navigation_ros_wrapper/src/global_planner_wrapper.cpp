@@ -9,7 +9,8 @@ void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to)
     ROS_INFO("Got param map_frame: %s", to.c_str());
 }
 
-GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler){
+GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
+{
     node_handler = _node_handler;
     // Read all params
     read_param("map_frame", map_frame);
@@ -34,12 +35,14 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     // Planner creation
     // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
     // global_planner = planner;
-    global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
+    // global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
+
+    global_planner_ptr = std::make_shared<GlobalPlanner3d>(drone_shape, bound_mi, bound_ma);
     
 
     // TODO: read from octomap server
     // octomap::OcTree octree(map_path);
-    // global_planner.update_map(octree);
+    // global_planner_ptr->update_map(octree);
 
 
     //Goal subscriber
@@ -56,11 +59,12 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
     //Path publisher
     ros::Publisher pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
-    
+
 }
+
 // Destructor
-GlobalPlanner3dNodeWrapper::~GlobalPlanner3dNodeWrapper(){
-}
+GlobalPlanner3dNodeWrapper::~GlobalPlanner3dNodeWrapper()
+{ }
 
 bool GlobalPlanner3dNodeWrapper::set_start()
 {
@@ -76,7 +80,7 @@ bool GlobalPlanner3dNodeWrapper::set_start()
     }
     Eigen::VectorXd robot_start(3);
     robot_start << tf_map_robot.getOrigin().x(), tf_map_robot.getOrigin().y(), tf_map_robot.getOrigin().z();
-    global_planner.set_start(robot_start);
+    global_planner_ptr->set_start(robot_start);
     return true;
 }
 
@@ -84,11 +88,11 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 {
     if (!set_start()) 
         return false;
-    bool ok = global_planner.plan();
+    bool ok = global_planner_ptr->plan();
     if(!ok){
         return false;
     }
-    std::vector<Eigen::VectorXd> out_path = global_planner.get_smooth_path();
+    std::vector<Eigen::VectorXd> out_path = global_planner_ptr->get_smooth_path();
 
     // convert to ROS Path
 	std::vector<geometry_msgs::PoseStamped> poses(out_path.size());
@@ -108,7 +112,7 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 void GlobalPlanner3dNodeWrapper::set_goal_callback(const geometry_msgs::Point::ConstPtr & msg){
     Eigen::VectorXd robot_goal(3);
     robot_goal << msg->x, msg->y, msg->z;
-    global_planner.set_goal(robot_goal);
+    global_planner_ptr->set_goal(robot_goal);
     nav_msgs::Path path_msg;
     if(!plan(path_msg)){
         return;

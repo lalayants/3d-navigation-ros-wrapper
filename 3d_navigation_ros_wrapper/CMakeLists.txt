@@ -18,7 +18,7 @@ include_directories(include/${CMAKE_PROJECT_NAME})
 include_directories(${catkin_INCLUDE_DIRS} ${3d_navigation_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
 
 add_library(global_planner_3d_ros_wrapper SHARED src/global_planner_wrapper.cpp)
-target_link_libraries(global_planner_3d_ros_wrapper global_planner_3d ${OCTOMAP_LIBRARIES} ${catkin_LIBRARIES} fcl ${OMPL_LIBRARIES})
+target_link_libraries(global_planner_3d_ros_wrapper ${3d_navigation_LIBRARIES} ${OCTOMAP_LIBRARIES} ${catkin_LIBRARIES} fcl ${OMPL_LIBRARIES})
 
 ## Main script for example and tests
 # add_executable(main src/main.cpp)
