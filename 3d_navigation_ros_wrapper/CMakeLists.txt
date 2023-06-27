@@ -6,7 +6,14 @@ endif()
 
 project(3d_navigation_ros_wrapper)
 
-find_package(catkin REQUIRED COMPONENTS 3d_navigation)
+find_package(catkin REQUIRED COMPONENTS 
+  3d_navigation 
+  roscpp
+  rospy
+  std_msgs
+  geometry_msgs
+  nav_msgs
+)
 find_package(fcl)
 
 catkin_package(
@@ -14,12 +21,7 @@ catkin_package(
   LIBRARIES global_planner_3d_ros_wrapper
 )
 
-# include_directories(${catkin_INCLUDE_DIRS} ${3d_navigation_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
 MESSAGE(${3d_navigation_INCLUDE_DIRS})
-
-# ## Main script for example and tests
-# add_executable(main src/main.cpp)
-# target_link_libraries(main ${catkin_LIBRARIES} ${3d_navigation_LIBRARIES} fcl)
 
 include_directories(include/${CMAKE_PROJECT_NAME})
 include_directories(${catkin_INCLUDE_DIRS} ${3d_navigation_INCLUDE_DIRS} ${fcl_INCLUDE_DIRS})
