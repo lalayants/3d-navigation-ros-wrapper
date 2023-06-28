@@ -50,7 +50,7 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
 
 
     //Goal subscriber
-    sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
+    sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 1, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
     if (!sub_goal){
         ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
         exit(1);
@@ -59,11 +59,24 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     //Path publisher
     pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
 
+    replan_service = node_handler.advertiseService("global_planner/replan", &GlobalPlanner3dNodeWrapper::replan_service_callback, this);
+
 }
 
 // Destructor
 GlobalPlanner3dNodeWrapper::~GlobalPlanner3dNodeWrapper()
 { }
+
+bool GlobalPlanner3dNodeWrapper::replan_service_callback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response){
+    ROS_INFO("REPLAN");
+    nav_msgs::Path path_msg;
+    if(!plan(path_msg)){
+        ROS_ERROR("replan_service_callback can not construct the plan");
+        return false;
+    }
+    pub_path.publish(path_msg);
+    return true;
+}
 
 bool GlobalPlanner3dNodeWrapper::set_start()
 {
@@ -102,7 +115,7 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
         return false;
     }
     std::vector<Eigen::VectorXd> out_path = global_planner_ptr->get_smooth_path();
-
+    ROS_INFO_STREAM("Given path length: "<< out_path.size());
     // convert to ROS Path
 	std::vector<geometry_msgs::PoseStamped> poses(out_path.size());
 	for (int i = 0; i < out_path.size(); i++)

@@ -52,10 +52,13 @@ private:
     octomap_msgs::Octomap octomap_msg;
     bool map_updated;
 
+    ros::ServiceServer replan_service;
+
     GlobalPlanner3dPtr global_planner_ptr;
     void read_param(std::string param, std::string & to);
     bool set_start();
 	void set_goal_callback(const geometry_msgs::Point::ConstPtr & msg);
+    bool replan_service_callback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 	void set_map_callback(const octomap_msgs::Octomap::ConstPtr & msg);
     bool plan(nav_msgs::Path & path_msg);
 };
