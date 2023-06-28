@@ -1,4 +1,5 @@
 #include "global_planner_wrapper.h"
+// #include "octomap_mag_conversions.h"
 
 
 void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to) {
@@ -43,6 +44,9 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     // TODO: read from octomap server
     // octomap::OcTree octree(map_path);
     // global_planner_ptr->update_map(octree);
+    map_updated=false;
+    map_listener = node_handler.subscribe(map_topic, 10, &GlobalPlanner3dNodeWrapper::set_map_callback, this);
+
 
 
     //Goal subscriber
@@ -82,6 +86,14 @@ bool GlobalPlanner3dNodeWrapper::set_start()
 
 bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 {
+    if (map_updated){
+        map_updated = false;
+        octomap::AbstractOcTree* tree = octomap_msgs::msgToMap(octomap_msg);
+        octomap::OcTree* octree = dynamic_cast<octomap::OcTree*>(tree);
+        if (octree){
+            global_planner_ptr->update_map(*octree);
+        }
+    }
     if (!set_start()) 
         return false;
     bool ok = global_planner_ptr->plan();
@@ -116,7 +128,9 @@ void GlobalPlanner3dNodeWrapper::set_goal_callback(const geometry_msgs::Point::C
         return;
     }
     pub_path.publish(path_msg);
-    // ROS_INFO("msg");
-    // ROS_ERROR("MSG");
-    // std::cout << "MSG" << std::endl;
+}
+
+void GlobalPlanner3dNodeWrapper::set_map_callback(const octomap_msgs::Octomap::ConstPtr & msg){
+    octomap_msg = *msg;
+    map_updated = true;
 }

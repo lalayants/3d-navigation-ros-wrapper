@@ -5,6 +5,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 project(3d_navigation_ros_wrapper)
+find_package(octomap REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS 
   3d_navigation 
@@ -13,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   nav_msgs
+  octomap_msgs
   tf
 )
 find_package(fcl)
