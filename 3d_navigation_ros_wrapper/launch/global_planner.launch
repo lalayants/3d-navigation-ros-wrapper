@@ -1,6 +1,5 @@
 <launch>
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_robot_transform" args="1 1.5 0 0 0 0 /map /robot_frame 100"/> -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="map_to_goal_transform" args="10 0 0 0 0 0 /map /goal_frame 100"/> -->
-  <rosparam command="load" file="$(find 3d_navigation_ros_wrapper)/config/params.yaml" />
+  <arg name="config_path" default="$(find 3d_navigation_ros_wrapper)/config/params.yaml"/>
+  <rosparam command="load" file="$(arg path)" />
   <node pkg="3d_navigation_ros_wrapper" type="global_planner_node" name="global_planner" output="screen"/>
 </launch> 
