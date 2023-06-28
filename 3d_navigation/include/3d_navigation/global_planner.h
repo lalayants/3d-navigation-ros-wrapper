@@ -43,9 +43,12 @@ namespace og = ompl::geometric;
 
 class GlobalPlanner3d {
 public:
+
+	GlobalPlanner3d();
 	GlobalPlanner3d(
         CollisionGeometryPtr robot_shape_ptr,
-        Eigen::VectorXd & _bound_min, Eigen::VectorXd & _bound_max
+        Eigen::VectorXd & _bound_min,
+		Eigen::VectorXd & _bound_max
     );
 	~GlobalPlanner3d();
 

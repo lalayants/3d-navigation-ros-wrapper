@@ -1,17 +1,21 @@
 #include "global_planner_wrapper.h"
-#include "global_planner.h"
+// #include "octomap_mag_conversions.h"
 
 
-void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to){
-    if (!node_handler.getParam(param, to)){
-        ROS_ERROR("ROS param %s is missing!", param.c_str());
+void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to) {
+    if (!ros::param::get(param, to)) {
+    // if (!node_handler.getParam(param, to)){
+        ROS_INFO("ROS param %s is missing!", param.c_str());
         exit(1);
+        ros::shutdown();
     }
-    ROS_INFO("Got param map_frame: %s", to.c_str());
+    ROS_INFO("Got param %s: %s", param.c_str(), to.c_str());
 }
 
 GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
 {
+    ros::Duration(1).sleep();
+    ROS_INFO("GlobalPlanner3dNodeWrapper creation started");
     node_handler = _node_handler;
     // Read all params
     read_param("map_frame", map_frame);
@@ -26,33 +30,52 @@ GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_h
     // Creat planner
     double bmin = ::atof(bound_min.c_str());
     double bmax = ::atof(bound_max.c_str());
-    Eigen::Vector3d bound_mi;
+    Eigen::VectorXd bound_mi(3);
     bound_mi << bmin, bmin, bmin;
-    Eigen::Vector3d bound_ma;
+    Eigen::VectorXd bound_ma(3);
     bound_ma << bmax, bmax, bmax;
-
     double size = ::atof(model_cube_size.c_str());
-    CollisionGeometryPtr drone_shape = CollisionGeometryPtr(new fcl::Box<double>(size, size, size));
-    global_planner = GlobalPlanner3d(drone_shape, bound_mi, bound_ma);
-    // GlobalPlanner3d planner(drone_shape, bound_mi, bound_ma);
-    // global_planner = planner;
+    CollisionGeometryPtr drone_shape(new fcl::Box<double>(size, size, size));
+
+    // Planner creation
+    global_planner_ptr = std::make_shared<GlobalPlanner3d>(drone_shape, bound_mi, bound_ma);
     
 
     // TODO: read from octomap server
     // octomap::OcTree octree(map_path);
-    // global_planner.update_map(octree);
+    // global_planner_ptr->update_map(octree);
+    map_updated=false;
+    map_listener = node_handler.subscribe(map_topic, 10, &GlobalPlanner3dNodeWrapper::set_map_callback, this);
+
 
 
     //Goal subscriber
-    ros::Subscriber sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 10, set_goal_callback);
+    sub_goal = node_handler.subscribe(goal_pose_sub_topic_name, 1, &GlobalPlanner3dNodeWrapper::set_goal_callback, this);
     if (!sub_goal){
         ROS_ERROR("Unable to subscribe on %s", goal_pose_sub_topic_name.c_str());
         exit(1);
     }
 
     //Path publisher
-    ros::Publisher pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
-    
+    pub_path = node_handler.advertise<nav_msgs::Path>(global_path_pub_topic_name, 10);
+
+    replan_service = node_handler.advertiseService("global_planner/replan", &GlobalPlanner3dNodeWrapper::replan_service_callback, this);
+
+}
+
+// Destructor
+GlobalPlanner3dNodeWrapper::~GlobalPlanner3dNodeWrapper()
+{ }
+
+bool GlobalPlanner3dNodeWrapper::replan_service_callback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response){
+    ROS_INFO("REPLAN");
+    nav_msgs::Path path_msg;
+    if(!plan(path_msg)){
+        ROS_ERROR("replan_service_callback can not construct the plan");
+        return false;
+    }
+    pub_path.publish(path_msg);
+    return true;
 }
 
 bool GlobalPlanner3dNodeWrapper::set_start()
@@ -67,22 +90,32 @@ bool GlobalPlanner3dNodeWrapper::set_start()
         ROS_ERROR("No start point TF.");
         return false;
     }
-    Eigen::Vector3d robot_start;
+    Eigen::VectorXd robot_start(3);
     robot_start << tf_map_robot.getOrigin().x(), tf_map_robot.getOrigin().y(), tf_map_robot.getOrigin().z();
-    global_planner.set_start(robot_start);
+    ROS_INFO_STREAM("Robot state: " << tf_map_robot.getOrigin().x() << " " << tf_map_robot.getOrigin().y() << " " << tf_map_robot.getOrigin().z());
+    global_planner_ptr->set_start(robot_start);
     return true;
 }
 
 bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 {
+    if (map_updated){
+        map_updated = false;
+        octomap::AbstractOcTree* tree = octomap_msgs::msgToMap(octomap_msg);
+        octomap::OcTree* octree = dynamic_cast<octomap::OcTree*>(tree);
+        if (octree){
+            global_planner_ptr->update_map(*octree);
+        }
+    }
     if (!set_start()) 
         return false;
-    bool ok = planner.plan();
+    bool ok = global_planner_ptr->plan();
     if(!ok){
+        ROS_ERROR("There is no plan!!");
         return false;
     }
-    std::vector<Eigen::VectorXd> out_path = planner.get_smooth_path();
-
+    std::vector<Eigen::VectorXd> out_path = global_planner_ptr->get_smooth_path();
+    ROS_INFO_STREAM("Given path length: "<< out_path.size());
     // convert to ROS Path
 	std::vector<geometry_msgs::PoseStamped> poses(out_path.size());
 	for (int i = 0; i < out_path.size(); i++)
@@ -98,14 +131,19 @@ bool GlobalPlanner3dNodeWrapper::plan(nav_msgs::Path & path_msg)
 	return true;
 }
 
-bool GlobalPlanner3dNodeWrapper::set_goal_callback(geometry_msgs::Point::ConstPtr & msg){
-    Eigen::Vector3d robot_goal;
+void GlobalPlanner3dNodeWrapper::set_goal_callback(const geometry_msgs::Point::ConstPtr & msg){
+    Eigen::VectorXd robot_goal(3);
     robot_goal << msg->x, msg->y, msg->z;
-    global_planner.set_goal(robot_goal);
+    global_planner_ptr->set_goal(robot_goal);
     nav_msgs::Path path_msg;
     if(!plan(path_msg)){
-        return false;
+        ROS_ERROR("set_goal_callback do not construct the plan");
+        return;
     }
     pub_path.publish(path_msg);
-    return true;
+}
+
+void GlobalPlanner3dNodeWrapper::set_map_callback(const octomap_msgs::Octomap::ConstPtr & msg){
+    octomap_msg = *msg;
+    map_updated = true;
 }

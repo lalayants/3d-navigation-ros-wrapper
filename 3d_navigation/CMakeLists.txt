@@ -38,7 +38,6 @@ target_link_libraries(${LIB_NAME} fcl ${OCTOMAP_LIBRARIES} ${OMPL_LIBRARIES})
 add_executable(main src/main.cpp)
 target_link_libraries(main ${LIB_NAME})
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/maps
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    
+# file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/maps
+#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
