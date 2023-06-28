@@ -9,7 +9,7 @@ void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to)
         exit(1);
         ros::shutdown();
     }
-    ROS_ERROR("Got param map_frame: %s", to.c_str());
+    ROS_ERROR("Got param: %s", to.c_str());
 }
 
 GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
