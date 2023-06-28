@@ -1,5 +1,5 @@
 <launch>
   <arg name="config_path" default="$(find 3d_navigation_ros_wrapper)/config/params.yaml"/>
-  <rosparam command="load" file="$(arg path)" />
+  <rosparam command="load" file="$(arg config_path)" />
   <node pkg="3d_navigation_ros_wrapper" type="global_planner_node" name="global_planner" output="screen"/>
 </launch> 

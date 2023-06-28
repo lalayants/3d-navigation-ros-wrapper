@@ -5,11 +5,11 @@
 void GlobalPlanner3dNodeWrapper::read_param(std::string param, std::string & to) {
     if (!ros::param::get(param, to)) {
     // if (!node_handler.getParam(param, to)){
-        ROS_ERROR("ROS param %s is missing!", param.c_str());
+        ROS_INFO("ROS param %s is missing!", param.c_str());
         exit(1);
         ros::shutdown();
     }
-    ROS_ERROR("Got param: %s", to.c_str());
+    ROS_INFO("Got param %s: %s", param.c_str(), to.c_str());
 }
 
 GlobalPlanner3dNodeWrapper::GlobalPlanner3dNodeWrapper(ros::NodeHandle & _node_handler)
