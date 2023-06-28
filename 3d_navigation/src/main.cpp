@@ -21,8 +21,12 @@ int main(int _argc, char **_argv){
         std::cout<<"Given path length: "<< out_path.size()<<std::endl;
     }
     octomap::OcTree octree("maps/sprint_501.bt");
-    planner.update_map(octree);
+    // planner.update_map(octree);
+    end= end*0.5;
+    std::cout<<end<<std::endl;
+    planner.set_goal(end);
     ok = planner.plan();
+
     if(ok){
         auto out_path = planner.get_smooth_path();
         std::cout<<"Given path length: "<< out_path.size()<<std::endl;

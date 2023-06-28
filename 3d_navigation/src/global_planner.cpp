@@ -16,23 +16,19 @@
 #include "logging.h"
 #include "global_planner.h"
 
-
-// GlobalPlanner3d::GlobalPlanner3d()
-// {}
+#define MAX_TIME_PLAN 10
 
 // Constructor
 GlobalPlanner3d::GlobalPlanner3d(
 	CollisionGeometryPtr robot_shape_ptr,
-	Eigen::VectorXd & _bound_min,
-	Eigen::VectorXd & _bound_max
+	Eigen::VectorXd & _bound_min, Eigen::VectorXd & _bound_max
 ):  dimension_ambient_space(_bound_min.rows()), bound_min(_bound_min), bound_max(_bound_max){
 
 	robot_object = std::make_shared<fcl::CollisionObject<double>>(robot_shape_ptr);
 	fcl::OcTree<double>* tree = new fcl::OcTree<double>(std::shared_ptr<const octomap::OcTree>(new octomap::OcTree(0.1)));
 	obstacle_map = std::make_shared<fcl::CollisionObject<double>>((CollisionGeometryPtr(tree)));
 	
-
-	std::cout<<"Asfafaf"<<int(dimension_ambient_space)<<std::endl;
+	INFO("Given ambient space dimension: " << dimension_ambient_space);
 	space_ptr = ob::StateSpacePtr(new ob::RealVectorStateSpace(dimension_ambient_space));
 
 	// set the bounds for the R^3
@@ -61,8 +57,8 @@ GlobalPlanner3d::GlobalPlanner3d(
 }
 
 // Destructor
-GlobalPlanner3d::~GlobalPlanner3d()
-{}
+GlobalPlanner3d::~GlobalPlanner3d(){
+}
 
 bool GlobalPlanner3d::set_start(Eigen::VectorXd & start_in){
 	ob::ScopedState<ob::RealVectorStateSpace> start_state(space_ptr);
@@ -114,7 +110,7 @@ void GlobalPlanner3d::update_map(octomap::OcTree & tree_oct){
 bool GlobalPlanner3d::replan(void){	
 	if(path_smooth != NULL){
 		og::PathGeometric* path = pdef_ptr->getSolutionPath()->as<og::PathGeometric>();
-		DEBUG("Total Points:" << path->getStateCount ());
+		DEBUG("Total Points:" << path->getStateCount());
 		double distance;
 		if(pdef_ptr->hasApproximateSolution()){
 			DEBUG("Goal state not satisfied and distance to goal is: " << pdef_ptr->getSolutionDifference());
@@ -143,21 +139,22 @@ bool GlobalPlanner3d::replan(void){
 }
 
 bool GlobalPlanner3d::plan(){
-
+	pdef_ptr->clearSolutionPaths();
+	plan_ptr->clear();
     // attempt to solve the problem within four seconds of planning time
-	ob::PlannerStatus solved = plan_ptr->solve(10);
+	ob::PlannerStatus solved = plan_ptr->solve(MAX_TIME_PLAN);
 
 	if (solved)
 	{
 		DEBUG("Found solution");
 		ob::PathPtr path = pdef_ptr->getSolutionPath();
 		og::PathGeometric* pth = pdef_ptr->getSolutionPath()->as<og::PathGeometric>();
-		
         //Path smoothing using bspline
 		path_smooth = std::make_shared<og::PathGeometric>(dynamic_cast<const og::PathGeometric&>(*pdef_ptr->getSolutionPath()));
+		bool simplify_ok = path_simplifier->simplify(*path_smooth, MAX_TIME_PLAN);
 		path_simplifier->smoothBSpline(*path_smooth);
-		replan_flag = false;
-		return true;
+		replan_flag = !simplify_ok;
+		return simplify_ok;
 	}
 	else
 		DEBUG("No solution found");
