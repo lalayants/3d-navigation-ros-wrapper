@@ -3,8 +3,8 @@ from std_msgs.msg import String
 import geometry_msgs.msg
 import tf
 def talker():
-    robot_x, robot_y, robot_z = 0, 0, 0
-    goal_x, goal_y, goal_z = 2, 0, 0
+    robot_x, robot_y, robot_z = 0, 2.1, 0
+    goal_x, goal_y, goal_z = 3, 1, 0
     print('from: ', robot_x, robot_y, robot_z)
     print('to: ', goal_x, goal_y, goal_z)
     pub = rospy.Publisher('/goal_pose_sub_topic_name', geometry_msgs.msg.Point, queue_size=10)
