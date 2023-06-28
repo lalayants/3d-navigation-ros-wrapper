@@ -36,7 +36,10 @@ WORKDIR /utils
 
 # Octomap installation
 RUN cd /utils && git clone https://github.com/OctoMap/octomap.git --branch v1.8.1 &&\
-    cd octomap && mkdir build && cd build && cmake .. && make install && apt update &&apt install ros-noetic-octomap ros-noetic-octomap-msgs ros-noetic-octomap-ros -y
+    cd octomap && mkdir build && cd build && cmake .. && make install && \
+    apt update && \
+    apt install -y ros-noetic-octomap ros-noetic-octomap-msgs ros-noetic-octomap-ros \
+        ros-noetic-octomap-server
 
 # FCL installation
 RUN cd /utils && git clone https://github.com/danfis/libccd.git && \
