@@ -19,8 +19,9 @@ services:
     ipc: host
     stdin_open: true
     tty: true
-    networks:
-      - general
+    network_mode: host
+    # networks:
+    #   - general
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /etc/localtime:/etc/localtime:ro

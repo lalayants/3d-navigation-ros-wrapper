@@ -36,7 +36,7 @@ WORKDIR /utils
 
 # Octomap installation
 RUN cd /utils && git clone https://github.com/OctoMap/octomap.git --branch v1.8.1 &&\
-    cd octomap && mkdir build && cd build && cmake .. && make install
+    cd octomap && mkdir build && cd build && cmake .. && make install && apt update &&apt install ros-noetic-octomap ros-noetic-octomap-msgs ros-noetic-octomap-ros -y
 
 # FCL installation
 RUN cd /utils && git clone https://github.com/danfis/libccd.git && \
@@ -47,7 +47,7 @@ RUN cd /utils && git clone https://github.com/danfis/libccd.git && \
 # OMPL installation
 RUN cd /utils && git clone https://github.com/ompl/omplapp.git --branch 1.6.0 --recursive &&\
     cd omplapp && mkdir -p build/Release && cd build/Release && cmake ../.. && \
-    make update_bindings && make && make install
+    make update_bindings && make && make install 
 
 WORKDIR /workspace/ros_ws
 
