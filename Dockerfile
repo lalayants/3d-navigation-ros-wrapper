@@ -50,7 +50,7 @@ RUN cd /utils && git clone https://github.com/danfis/libccd.git && \
 # OMPL installation
 RUN cd /utils && git clone https://github.com/ompl/omplapp.git --branch 1.6.0 --recursive &&\
     cd omplapp && mkdir -p build/Release && cd build/Release && cmake ../.. && \
-    make update_bindings && make && make install 
+    make && make install 
 
 WORKDIR /workspace/ros_ws
 
