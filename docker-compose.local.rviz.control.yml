@@ -30,7 +30,7 @@ services:
   octomap:
     image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
     container_name: octomap
-    command: ["/bin/bash", "-ci", "roslaunch octomap_server octomap_tracking_server.launch path:=/workspace/ros_ws/src/3d_navigation/maps/29_06.bt"]
+    command: ["/bin/bash", "-ci", "roslaunch octomap_server octomap_tracking_server.launch path:=/workspace/ros_ws/src/3d_navigation/maps/stairs_29_06.bt"]
     environment:
       - DISPLAY
       - XAUTORITY
