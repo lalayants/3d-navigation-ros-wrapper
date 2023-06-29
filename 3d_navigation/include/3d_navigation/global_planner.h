@@ -54,6 +54,8 @@ public:
 
 	bool set_start(Eigen::VectorXd & start);
 	bool set_goal(Eigen::VectorXd & goal);
+	void set_bound_max(Eigen::VectorXd & max);
+	void set_bound_min(Eigen::VectorXd & min);
 
 	void update_map(octomap::OcTree & tree_oct);
 	bool plan(void);
