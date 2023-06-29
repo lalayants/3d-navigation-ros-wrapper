@@ -1,0 +1,7 @@
+<launch>
+  <!-- start rviz -->
+  <arg name="config_path" default="$(find 3d_navigation_ros_wrapper)/config/params.yaml" />
+  <node name="$(anon rviz)" pkg="rviz" type="rviz" args="-d $(find tf_visual_tools)/launch/control.rviz" output="screen"/>
+  <node pkg="tf_visual_tools" type="tf_visual_tools_publisher" name="rviz_tfs" output="screen" />
+  <node pkg="tf_visual_tools" name="goal_translator" type="goal_translator_node.py" args='$(arg config_path)' output="screen"/> 
+</launch>

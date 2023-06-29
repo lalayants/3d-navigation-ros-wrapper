@@ -2,7 +2,7 @@ version: '3.9'
 name: '3d_navigation'
 
 services:
-  scene:
+  global_planer:
     build:
       context: .
       args:

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>3d_navigation</name>
+  <version>0.0.1</version>
+  <description>C++ package for performing 3D navigation on octomap and voxelblock environments</description>
+
+  <maintainer email="texnoman@itmo.ru">Vladislav Antipov</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package>
+  <name>3d_navigation_ros_wrapper</name>
+  <version>0.0.1</version>
+  <description>ROS package for performing 3D navigation on octomap and voxelblock environments</description>
+
+  <maintainer email="texnoman@itmo.ru">Vladislav Antipov</maintainer>
+
+  <license>MIT</license>
+
+  <url type="website">http://wiki.ros.org/3d_navigation_ros_wrapper</url>
+  <url type="repository">http://gitlab.com/beerlab/cpc/navigation/3d_navigation_ros_wrapper.git</url>
+  <author email="texnoman@itmo.ru">Vladislav Antipov</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <build_depend>3d_navigation</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>xacro</run_depend>
+  <run_depend>3d_navigation</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>pr2_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>control_msgs</run_depend>
+  <run_depend>diagnostic_msgs</run_depend> 
+  <run_depend>geometry_msgs</run_depend> 
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>trajectory_msgs</run_depend>
+
+  <export>
+  </export>
+</package>
