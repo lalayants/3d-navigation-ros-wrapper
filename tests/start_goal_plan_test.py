@@ -14,8 +14,8 @@ def talker():
     while not rospy.is_shutdown():
         new_m = geometry_msgs.msg.Point(goal_x, goal_y, goal_z)
         br.sendTransform((robot_x, robot_y, robot_z),tf.transformations.quaternion_from_euler(0, 0, 0), rospy.Time.now(), 'robot_frame', 'map')
-        br.sendTransform((goal_x, goal_y, goal_z),tf.transformations.quaternion_from_euler(0, 0, 0), rospy.Time.now(), 'goal_frame', 'map')
-        pub.publish(new_m)
+        # br.sendTransform((goal_x, goal_y, goal_z),tf.transformations.quaternion_from_euler(0, 0, 0), rospy.Time.now(), 'goal_frame', 'map')
+        # pub.publish(new_m)
         rate.sleep()
 
 if __name__ == '__main__':
