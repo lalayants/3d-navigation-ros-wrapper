@@ -60,6 +60,13 @@ GlobalPlanner3d::GlobalPlanner3d(
 GlobalPlanner3d::~GlobalPlanner3d(){
 }
 
+void GlobalPlanner3d::set_bound_max(Eigen::VectorXd & max){
+	bound_max = max;
+}
+void GlobalPlanner3d::set_bound_min(Eigen::VectorXd & min){
+	bound_min = min;
+}
+
 bool GlobalPlanner3d::set_start(Eigen::VectorXd & start_in){
 	ob::ScopedState<ob::RealVectorStateSpace> start_state(space_ptr);
 	for(uint8_t i = 0; i < dimension_ambient_space; i++){
