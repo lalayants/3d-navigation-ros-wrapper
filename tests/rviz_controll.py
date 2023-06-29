@@ -3,7 +3,7 @@ from std_msgs.msg import String
 import geometry_msgs.msg
 import tf
 def talker():
-    robot_x, robot_y, robot_z = 0, 2.1, 0
+    robot_x, robot_y, robot_z = -2.5, 1.5, 0
     print('from: ', robot_x, robot_y, robot_z)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
