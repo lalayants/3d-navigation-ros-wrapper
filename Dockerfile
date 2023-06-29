@@ -55,5 +55,6 @@ RUN cd /utils && git clone https://github.com/ompl/omplapp.git --branch 1.6.0 --
 WORKDIR /workspace/ros_ws
 
 COPY . /workspace/ros_ws/src/3d_navigation
+RUN cd /workspace/ros_ws/ && rosdep install -y --from-paths src --ignore-src --rosdistro noetic
 # RUN cd src/3d_navigation && mkdir -p build && cd build && cmake .. && make 
 
