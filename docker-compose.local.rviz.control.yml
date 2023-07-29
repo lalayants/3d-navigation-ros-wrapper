@@ -6,10 +6,6 @@ services:
   global-planner:
     build:
       context: .
-      args:
-        - BASE_IMG=registry.gitlab.com/beerlab/cpc/utils/cps_ros_base_docker:latest
-      cache_from: 
-        - 3d_navigation:latest
     image: 3d_navigation:latest
     container_name: 3d_navigation
     command: ["/bin/bash", "-ci", "catkin build && source devel/setup.bash && roslaunch 3d_navigation_ros_wrapper global_planner.launch"]
