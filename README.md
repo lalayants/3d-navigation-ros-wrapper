@@ -1,5 +1,7 @@
 # 3d_navigation
-There is fork of the package: [OctomapPlanner](https://github.com/ArduPilot/OctomapPlanner). This package contain ROS 3d navigation stack for drones and quadruped robots.
+3d-navigation-ros-wrapper
+This is ROS wrapper for 3D navigation on octomap.
+
 
 ## License
 MIT

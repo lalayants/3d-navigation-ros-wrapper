@@ -3,7 +3,7 @@ name: '3d_navigation'
 
 services:
   scene:
-    image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
+    image: 3d_navigation:latest
     container_name: 3d_navigation
     command: ["/bin/bash", "-ci", "catkin build && source devel/setup.bash && bash"]
     environment:

@@ -9,8 +9,8 @@ services:
       args:
         - BASE_IMG=registry.gitlab.com/beerlab/cpc/utils/cps_ros_base_docker:latest
       cache_from: 
-        - registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
-    image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
+        - 3d_navigation:latest
+    image: 3d_navigation:latest
     container_name: 3d_navigation
     command: ["/bin/bash", "-ci", "catkin build && source devel/setup.bash && roslaunch 3d_navigation_ros_wrapper global_planner.launch"]
     environment:
@@ -28,7 +28,7 @@ services:
       - ./:/workspace/ros_ws/src/3d_navigation
   # Octomap service
   octomap:
-    image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
+    image: 3d_navigation:latest
     container_name: octomap
     command: ["/bin/bash", "-ci", "roslaunch octomap_server octomap_tracking_server.launch path:=/workspace/ros_ws/src/3d_navigation/maps/stairs_29_06.bt"]
     environment:
@@ -47,7 +47,7 @@ services:
     depends_on:
       - global-planner
   rviz:
-    image: registry.gitlab.com/beerlab/cpc/navigation/3d_navigation:latest
+    image: 3d_navigation:latest
     container_name: rviz
     command: ["/bin/bash", "-ci", "catkin build && source devel/setup.bash && roslaunch tf_visual_tools rviz_control.launch"]
     environment:
